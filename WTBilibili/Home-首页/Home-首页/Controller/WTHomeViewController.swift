@@ -10,11 +10,15 @@ import UIKit
 
 class WTHomeViewController: UIViewController
 {
-    // MARK: - 懒加载
+    // MARK: 自定义控件
     /// 标题工具栏
     let toolBarView = UIView()
-    
+    /// 内容的ScrollView
     let contentView = UIScrollView()
+    /// 选中的标题按钮
+    var selectedBtn = UIButton()
+    /// 标题按钮数组
+    var titleBtns = [UIButton]()
 
     // MARK: - 系统回调函数
     override func viewDidLoad()
@@ -44,8 +48,13 @@ extension WTHomeViewController
         
         // 2、设置内容滚动视图
         view.addSubview(contentView)
-        contentView.frame = CGRect(x: 0, y: 0, width: WTScreenWidth, height: WTScreenHeight)
+        let y: CGFloat = self.navigationController!.navigationBarHidden ? 20 : 64
+        contentView.frame = CGRect(x: 0, y: y, width: WTScreenWidth, height: WTScreenHeight)
         contentView.delegate = self
+        contentView.pagingEnabled = true
+        contentView.bounces = false
+        
+        automaticallyAdjustsScrollViewInsets = false
     }
     
     // MARK: - 设置所有子控制器
@@ -91,26 +100,106 @@ extension WTHomeViewController
             // 2、设置按钮属性
             btn.tag = i
             btn.setTitle(viewController.title, forState: .Normal)
-            btn.setTitleColor(WTColor(r: 153, g: 153, b: 153), forState: .Normal)
-            btn.setTitleColor(WTColor(r: 251, g: 114, b: 153), forState: .Highlighted)
-            btn.setTitleColor(WTColor(r: 251, g: 114, b: 153), forState: .Selected)
+            btn.setTitleColor(WTHomeTitleBtnNormalColor, forState: .Normal)
+            btn.setTitleColor(WTHomeTitleBtnSelectedColor, forState: .Highlighted)
             btn.addTarget(self, action: #selector(titleBtnClick), forControlEvents: .TouchUpInside)
+            
+//            if i == 1
+//            {
+//                titleBtnClick(btn)
+//            }
+            
+            titleBtns.append(btn)
         }
+        
+        let btn = titleBtns[1];
+        titleBtnClick(btn)
+        
+        contentView.contentSize = CGSize(width: CGFloat(count) * WTScreenWidth, height: WTScreenHeight)
+    }
+}
+
+// MARK: - 自定义函数
+extension WTHomeViewController
+{
+    // MARK: 根据索引设置控制器的View
+    private func setupOneViewControllerView(currentIndex: Int)
+    {
+        // 1、获取子控制器
+        let viewController = childViewControllers[currentIndex]
+    
+        // 2、判断view已经加入到contentView
+        if viewController.view.superview != nil
+        {
+            return;
+        }
+        
+        // 3、设置frame
+        viewController.view.frame = contentView.bounds
+        
+        // 4、添加view
+        contentView.addSubview(viewController.view)
+    }
+    
+    // MARK: 更改左右两边按钮属性
+    private func changeButtonAttr(offset: CGFloat)
+    {
+        let leftIndex = Int(offset / WTScreenWidth)
+        
+        let btn = titleBtns[leftIndex];
+        titleBtnClick(btn)
     }
 }
 
 // MARK: - 事件处理
 extension WTHomeViewController
 {
-    // 标题按钮点击
-    @objc private func titleBtnClick()
+    // MARK: 标题按钮点击
+    @objc private func titleBtnClick(btn: UIButton)
     {
         print("titleBtnClick")
+        
+        // 1、设置按钮颜色
+        selectedBtn.setTitleColor(WTHomeTitleBtnNormalColor, forState: .Normal)
+        btn.setTitleColor(WTHomeTitleBtnSelectedColor, forState: .Normal)
+        
+        // 2、设置ScrollView的contentOffset的Y值
+//        let x = CGFloat(btn.tag) * WTScreenWidth
+//        contentView.setContentOffset(CGPoint(x: x, y: 0), animated: true)
+        
+        setupOneViewControllerView(btn.tag)
+        
+        // 3、赋值当前选中的按钮
+        selectedBtn = btn
     }
 }
 
 // MARK: - UIScrollViewDelegate
 extension WTHomeViewController: UIScrollViewDelegate
 {
-
+    // MARK: 手指滑动时调用
+    func scrollViewDidScroll(scrollView: UIScrollView)
+    {
+        // 更改左右两边按钮属性
+        changeButtonAttr(scrollView.contentOffset.x)
+    }
+    
+    // MARK: 减速完成后调用
+    func scrollViewDidEndDecelerating(scrollView: UIScrollView)
+    {
+        
+        scrollViewDidEndScrollingAnimation(scrollView)
+    }
+    
+    // MARK: 当滚动视图完成后，调用该方法，如果没有动画，就不会调用
+    func scrollViewDidEndScrollingAnimation(scrollView: UIScrollView)
+    {
+        let currentIndex = Int(scrollView.contentOffset.x / WTScreenWidth)
+        
+        let selectedBtn = titleBtns[currentIndex]
+        
+        titleBtnClick(selectedBtn)
+        
+        setupOneViewControllerView(currentIndex)
+    }
 }
