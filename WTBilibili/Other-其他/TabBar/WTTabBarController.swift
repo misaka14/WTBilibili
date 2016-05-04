@@ -27,7 +27,7 @@ extension WTTabBarController
     private func setupUI()
     {
         // 1、首页
-        addOneChildViewController(WTHomeViewController(), title: "首页", imageName: "home_home_tab")
+        addOneChildViewController(WTRecommendViewController(), title: "首页", imageName: "home_home_tab")
         
         // 2、关注
         addOneChildViewController(WTDiscoverViewController(), title: "关注", imageName: "home_attention_tab")
