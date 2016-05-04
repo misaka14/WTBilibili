@@ -10,7 +10,7 @@ import UIKit
 import SDCycleScrollView
 
 /// headerView的高度
-let recommendBannerHeaderViewHeight: CGFloat = 100
+let recommendBannerHeaderViewHeight: CGFloat = 120
 
 // 定义协议
 protocol WTRecommendBannerHeaderViewDelegate: NSObjectProtocol

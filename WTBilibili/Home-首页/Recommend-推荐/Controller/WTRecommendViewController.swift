@@ -12,6 +12,9 @@ private let recommendCell = "recommendCell"
 
 class WTRecommendViewController: UITableViewController
 {
+    // MARK: 属性
+    private var recommendItems = [WTRecommendItem]()
+    
     // MARK: 控件
     /// headerView
     private var headerView = WTRecommendBannerHeaderView()
@@ -36,7 +39,9 @@ extension WTRecommendViewController
     private func setupUI()
     {
         // 0、tableView基本属性
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: recommendCell)
+        tableView.registerNib(UINib(nibName: "WTRecommendCell", bundle: nil), forCellReuseIdentifier: recommendCell)
+        tableView.rowHeight = 425
+        tableView.separatorStyle = .None
         
         // 1、设置tableView的headerView
         headerView.frame = CGRect(x: 0, y: 0, width: WTScreenWidth, height: recommendBannerHeaderViewHeight)
@@ -85,7 +90,29 @@ extension WTRecommendViewController
     // MARK: 加载tableView的数据
     private func loadTableViewData()
     {
-        
+        do{
+            // 1、加载config文件
+            let filePath = NSBundle.mainBundle().pathForResource("config", ofType: nil)
+            let data = NSData(contentsOfFile: filePath!)
+            let json = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.AllowFragments)
+            
+            guard let itemDicts = json["data"] as? [[String: AnyObject]] else
+            {
+                return;
+            }
+            
+            // 2、获取结果
+            for itemDict in itemDicts
+            {
+                recommendItems.append(WTRecommendItem(dict: itemDict))
+            }
+            
+            // 3、刷新数据
+            tableView.reloadData()
+        }
+        catch{
+            print(error)
+        }
     }
 }
 
@@ -94,13 +121,14 @@ extension WTRecommendViewController
 {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        return 0
+        return self.recommendItems.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
-        let cell = tableView.dequeueReusableCellWithIdentifier(recommendCell)!
+        let cell = tableView.dequeueReusableCellWithIdentifier(recommendCell) as! WTRecommendCell
         
+        cell.recommendItem = recommendItems[indexPath.row]
         
         return cell
     }
@@ -115,7 +143,7 @@ extension WTRecommendViewController: WTRecommendBannerHeaderViewDelegate
         { 
             print("数字")
         }
-        else                                                        // http请求,打开webView
+        else                          // http请求,打开webView
         {
             print("url")
         }

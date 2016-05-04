@@ -7,5 +7,6 @@ target 'WTBilibili' do
 pod 'SDCycleScrollView'
 pod 'AFNetworking'
 pod 'YYCategories'
+pod 'SnapKit'
 end
 

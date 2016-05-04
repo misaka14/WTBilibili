@@ -87,11 +87,13 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods-WTBilibili/AFNetworking.framework"
   install_framework "Pods-WTBilibili/SDCycleScrollView.framework"
   install_framework "Pods-WTBilibili/SDWebImage.framework"
+  install_framework "Pods-WTBilibili/SnapKit.framework"
   install_framework "Pods-WTBilibili/YYCategories.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "Pods-WTBilibili/AFNetworking.framework"
   install_framework "Pods-WTBilibili/SDCycleScrollView.framework"
   install_framework "Pods-WTBilibili/SDWebImage.framework"
+  install_framework "Pods-WTBilibili/SnapKit.framework"
   install_framework "Pods-WTBilibili/YYCategories.framework"
 fi
