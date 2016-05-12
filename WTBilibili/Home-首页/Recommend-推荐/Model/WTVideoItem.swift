@@ -18,7 +18,7 @@ import UIKit
 
 class WTVideoItem: NSObject
 {
-    var title: TitleType!
+    var title: String!
     
     var cover: NSURL!
     

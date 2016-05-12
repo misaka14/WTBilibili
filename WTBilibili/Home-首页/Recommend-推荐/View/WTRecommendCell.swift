@@ -40,12 +40,12 @@ class WTRecommendCell: UITableViewCell
             
             videoListView.videos = recommendItem?.body
             
-            switch recommendItem!.title {
-            case .HOT:
-                print("1")
-            default:
-                print("1")
-            }
+//            switch recommendItem!.title {
+//            case .HOT:
+//                print("1")
+//            default:
+//                print("1")
+//            }
         }
     }
     
